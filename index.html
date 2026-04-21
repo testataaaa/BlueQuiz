@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Shirt Day Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a1628;
+    --deep: #0d2b5e;
+    --mid: #1a4fa0;
+    --bright: #2b7fff;
+    --sky: #5ba8ff;
+    --pale: #c8deff;
+    --white: #f0f6ff;
+    --gold: #ffd166;
+    --coral: #ff6b6b;
+    --green: #06d6a0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background bubbles */
+  .bg {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+  }
+  .bubble {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--bright), transparent 70%);
+    opacity: 0.08; animation: float linear infinite;
+  }
+  .bubble:nth-child(1) { width:400px;height:400px;left:-100px;top:-100px;animation-duration:20s; }
+  .bubble:nth-child(2) { width:300px;height:300px;right:-50px;top:20%;animation-duration:15s;animation-delay:-5s; }
+  .bubble:nth-child(3) { width:500px;height:500px;left:30%;bottom:-150px;animation-duration:25s;animation-delay:-10s; }
+  .bubble:nth-child(4) { width:200px;height:200px;right:20%;bottom:30%;animation-duration:18s;animation-delay:-7s; }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    max-width: 780px; margin: 0 auto; padding: 40px 20px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center; margin-bottom: 50px;
+    animation: fadeDown 0.8s ease both;
+  }
+  .header .badge {
+    display: inline-block;
+    background: var(--bright); color: var(--navy);
+    font-weight: 700; font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 6px 18px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(2.5rem, 8vw, 4.5rem);
+    line-height: 1.05;
+    background: linear-gradient(135deg, var(--white) 0%, var(--sky) 50%, var(--pale) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 16px;
+  }
+  .header p {
+    color: var(--pale); font-size: 1.1rem; max-width: 500px; margin: 0 auto;
+    line-height: 1.6;
+  }
+  .shirt-emoji { font-size: 3rem; display: block; margin-bottom: 12px; animation: wobble 2s ease infinite; }
+  @keyframes wobble {
+    0%,100%{transform:rotate(-5deg);} 50%{transform:rotate(5deg);}
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: rgba(255,255,255,0.1); border-radius: 10px;
+    height: 8px; margin-bottom: 40px; overflow: hidden;
+    animation: fadeDown 0.8s 0.2s ease both;
+  }
+  .progress-bar {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--bright), var(--sky));
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+    width: 0%;
+  }
+  .progress-label {
+    text-align: right; font-size: 13px; color: var(--pale);
+    margin-bottom: 8px; animation: fadeDown 0.8s 0.2s ease both;
+  }
+
+  /* Question card */
+  .question-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 40px;
+    backdrop-filter: blur(10px);
+    animation: fadeUp 0.5s ease both;
+    position: relative; overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--bright), var(--sky), var(--pale));
+  }
+
+  .question-number {
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--sky); margin-bottom: 16px;
+  }
+  .question-text {
+    font-family: 'Abril Fatface', serif;
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    line-height: 1.3; margin-bottom: 32px; color: var(--white);
+  }
+  .fun-tag {
+    display: inline-block;
+    background: rgba(43,127,255,0.2); border: 1px solid rgba(43,127,255,0.4);
+    color: var(--sky); font-size: 11px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .fun-tag.asthma { background: rgba(6,214,160,0.15); border-color: rgba(6,214,160,0.4); color: var(--green); }
+
+  /* Options */
+  .options { display: grid; gap: 12px; }
+  .option {
+    background: rgba(255,255,255,0.06);
+    border: 2px solid rgba(255,255,255,0.12);
+    border-radius: 14px; padding: 16px 20px;
+    cursor: pointer; text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 500; color: var(--white);
+    transition: all 0.2s ease;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .option:hover:not(:disabled) {
+    background: rgba(43,127,255,0.2);
+    border-color: var(--bright);
+    transform: translateX(4px);
+  }
+  .option .opt-letter {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; transition: all 0.2s;
+  }
+  .option.correct {
+    background: rgba(6,214,160,0.2); border-color: var(--green);
+    animation: correctPop 0.4s ease;
+  }
+  .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: var(--navy); }
+  .option.wrong {
+    background: rgba(255,107,107,0.15); border-color: var(--coral);
+  }
+  .option.wrong .opt-letter { background: var(--coral); border-color: var(--coral); color: white; }
+  .option.reveal-correct {
+    background: rgba(6,214,160,0.1); border-color: rgba(6,214,160,0.5);
+  }
+  .option:disabled { cursor: default; }
+
+  @keyframes correctPop {
+    0%{transform:scale(1);} 50%{transform:scale(1.03);} 100%{transform:scale(1);}
+  }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 20px; padding: 16px 20px; border-radius: 14px;
+    font-size: 0.95rem; line-height: 1.5;
+    animation: fadeUp 0.3s ease;
+    display: none;
+  }
+  .feedback.correct-fb {
+    background: rgba(6,214,160,0.15); border: 1px solid rgba(6,214,160,0.3);
+    color: #a0f5df;
+    display: block;
+  }
+  .feedback.wrong-fb {
+    background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.3);
+    color: #ffb3b3;
+    display: block;
+  }
+  .feedback strong { color: var(--white); }
+
+  /* Next button */
+  .next-btn {
+    display: none; margin-top: 24px;
+    background: linear-gradient(135deg, var(--bright), var(--sky));
+    color: var(--navy); border: none; border-radius: 12px;
+    padding: 14px 32px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s; letter-spacing: 0.5px;
+  }
+  .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(43,127,255,0.4); }
+  .next-btn.show { display: inline-block; }
+
+  /* Score screen */
+  .score-screen {
+    text-align: center; padding: 20px;
+    animation: fadeUp 0.6s ease both;
+    display: none;
+  }
+  .score-screen.show { display: block; }
+  .question-card.hidden { display: none; }
+
+  .score-circle {
+    width: 160px; height: 160px; border-radius: 50%;
+    background: conic-gradient(var(--bright) var(--pct), rgba(255,255,255,0.1) 0);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 30px;
+    position: relative;
+    box-shadow: 0 0 40px rgba(43,127,255,0.3);
+  }
+  .score-circle-inner {
+    width: 130px; height: 130px; border-radius: 50%;
+    background: var(--navy);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .score-num {
+    font-family: 'Abril Fatface', serif;
+    font-size: 2.8rem; color: var(--white); line-height: 1;
+  }
+  .score-denom { font-size: 14px; color: var(--pale); }
+
+  .score-screen h2 {
+    font-family: 'Abril Fatface', serif;
+    font-size: 2.2rem; margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--white), var(--sky));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .score-screen p { color: var(--pale); font-size: 1.05rem; max-width: 420px; margin: 0 auto 32px; line-height: 1.6; }
+
+  .restart-btn {
+    background: transparent;
+    border: 2px solid var(--bright); color: var(--bright);
+    border-radius: 12px; padding: 14px 32px;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .restart-btn:hover { background: var(--bright); color: var(--navy); }
+
+  .score-breakdown {
+    margin: 24px 0; text-align: left;
+    background: rgba(255,255,255,0.04); border-radius: 16px; padding: 20px;
+  }
+  .score-breakdown h3 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--sky); margin-bottom: 16px; }
+  .breakdown-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.9rem;
+  }
+  .breakdown-item:last-child { border-bottom: none; }
+  .breakdown-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .breakdown-q { flex: 1; color: var(--pale); line-height: 1.3; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+  @keyframes fadeDown {
+    from { opacity:0; transform: translateY(-20px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+  <div class="bubble"></div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <span class="shirt-emoji">👕</span>
+    <div class="badge">Blue Shirt Day Quiz</div>
+    <h1>How Blue Are You?</h1>
+    <p>Test your knowledge of all things blue — from the weird and wonderful to the world around us.</p>
+  </div>
+
+  <div class="progress-label" id="progressLabel">Question 1 of 10</div>
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+  <div class="question-card" id="questionCard">
+    <div class="fun-tag" id="funTag">🔵 Blue Fact</div>
+    <div class="question-number" id="questionNumber">Question 1</div>
+    <div class="question-text" id="questionText"></div>
+    <div class="options" id="optionsContainer"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+
+  <div class="score-screen" id="scoreScreen">
+    <div class="score-circle" id="scoreCircle">
+      <div class="score-circle-inner">
+        <div class="score-num" id="scoreNum">0</div>
+        <div class="score-denom" id="scoreDenom">out of 10</div>
+      </div>
+    </div>
+    <h2 id="scoreTitle">Well done!</h2>
+    <p id="scoreMessage"></p>
+    <div class="score-breakdown" id="scoreBreakdown">
+      <h3>Your answers</h3>
+      <div id="breakdownList"></div>
+    </div>
+    <button class="restart-btn" onclick="restartQuiz()">🔄 Play Again</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    tag: "🎨 Colour Science",
+    text: "Why does the sky appear blue?",
+    options: [
+      "The ocean's colour reflects upward",
+      "Blue light scatters more than other colours in the atmosphere",
+      "The ozone layer absorbs red light",
+      "Human eyes are more sensitive to blue wavelengths"
+    ],
+    answer: 1,
+    fact: "Shorter blue wavelengths scatter in all directions when they hit gas molecules — a phenomenon called Rayleigh scattering. Red and orange light pass straight through."
+  },
+  {
+    tag: "🐠 Nature",
+    text: "True blue is extremely rare in nature. Which of these is NOT actually blue — it just looks it?",
+    options: [
+      "The morpho butterfly",
+      "A blue jay's feathers",
+      "The blue-ringed octopus rings",
+      "Blueberries"
+    ],
+    answer: 1,
+    fact: "Blue jay feathers contain no blue pigment! The colour is caused by light scattering through microscopic air pockets in the feather structure — a trick called structural colour."
+  },
+  {
+    tag: "🎵 Music",
+    text: "\"Feeling blue\" is a universal phrase. But where did the term 'the blues' in music likely originate?",
+    options: [
+      "From the blue uniforms worn by jazz musicians in New Orleans",
+      "From 'blue devils' — a 17th century English phrase for melancholy spirits",
+      "From the indigo dye trade routes through Mississippi",
+      "It was invented by Robert Johnson"
+    ],
+    answer: 1,
+    fact: "\"Blue devils\" was an old English expression for the fits of depression that accompanied withdrawal from alcohol. By the 1800s, 'the blues' described low spirits — and the music followed."
+  },
+  {
+    tag: "🌊 Geography",
+    text: "The Blue Hole in Dahab, Egypt is one of the world's most famous dive sites. How deep does it go?",
+    options: [
+      "Approx 50 metres",
+      "Approx 100 metres",
+      "Approx 300 metres",
+      "Over 600 metres"
+    ],
+    answer: 1,
+    fact: "The Blue Hole is around 100 metres deep and infamous for being one of the most dangerous dive sites on Earth, claiming many lives. Its seemingly calm water disguises its extreme depth."
+  },
+  {
+    tag: "🎭 Culture & Language",
+    text: "In ancient Egypt, what did the colour blue symbolise?",
+    options: [
+      "Death and mourning",
+      "The afterlife and divine protection",
+      "Royalty and power",
+      "Fertility and harvest"
+    ],
+    answer: 1,
+    fact: "The Egyptians associated blue with the heavens, water, and divine protection. They even created the world's first synthetic pigment — Egyptian Blue — around 2,200 BC."
+  },
+  {
+    tag: "💙 Asthma Awareness",
+    text: "The blue reliever inhaler (like Ventolin) is a cornerstone of asthma treatment. How does it work?",
+    options: [
+      "It reduces mucus production in the airways",
+      "It relaxes the muscles around the airways to open them up",
+      "It reduces inflammation in the lungs over time",
+      "It increases oxygen levels in the blood directly"
+    ],
+    answer: 1,
+    fact: "Blue relievers contain a short-acting beta-agonist (like salbutamol) which relaxes the smooth muscle around airways within minutes, opening them up during an asthma attack. That's why it's called a 'reliever'!"
+  },
+  {
+    tag: "🍕 Food & Drink",
+    text: "Naturally blue foods are incredibly rare. Which of these is a genuinely naturally-occurring blue food?",
+    options: [
+      "Blue cheese (Gorgonzola)",
+      "Blue corn (used in tortillas)",
+      "Blue potatoes",
+      "Blue spirulina smoothies"
+    ],
+    answer: 1,
+    fact: "Blue corn (also called Hopi corn) is genuinely blue due to anthocyanin pigments. It's used in Native American cooking including tortillas and cornbread. Blue spirulina, while popular, is extracted and added — not naturally blue in food form."
+  },
+  {
+    tag: "🐋 Wildlife",
+    text: "The blue whale is the largest animal ever known to exist on Earth. How much can its heart weigh?",
+    options: [
+      "Around 50kg — about the size of a labrador",
+      "Around 180kg — about the size of a motorbike",
+      "Around 400kg — about the size of a small car",
+      "Around 20kg — about the size of a large dog"
+    ],
+    answer: 1,
+    fact: "A blue whale's heart can weigh around 180kg — roughly the size of a small motorbike — and beats as slowly as 2 times per minute when diving. You could crawl through its aorta."
+  },
+  {
+    tag: "🎨 Art History",
+    text: "Artist Yves Klein created his own trademarked shade of blue. What is it called?",
+    options: [
+      "Klein Cobalt",
+      "International Klein Blue (IKB)",
+      "Outremer Vif",
+      "Bleu Absolu"
+    ],
+    answer: 1,
+    fact: "Yves Klein developed International Klein Blue (IKB) in 1960, mixing ultramarine pigment with a special binder. He reportedly said the colour represented 'the void' — infinite space and pure feeling. He even patented it."
+  },
+  {
+    tag: "🌍 Fun Fact",
+    text: "Which country has the most blue in its national flag, and uses it most prominently?",
+    options: [
+      "France",
+      "Greece",
+      "Sweden",
+      "Finland"
+    ],
+    answer: 1,
+    fact: "Greece's flag is famously blue and white — nine horizontal stripes representing the syllables of 'Eleftheria i Thanatos' (Freedom or Death). Blue in the Greek flag represents the sea and sky surrounding the country."
+  }
+];
+
+let current = 0;
+let score = 0;
+let answered = [];
+let userAnswers = [];
+
+function shuffle(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
+function loadQuestion() {
+  const q = questions[current];
+  document.getElementById('questionNumber').textContent = `Question ${current + 1}`;
+  document.getElementById('questionText').textContent = q.text;
+  document.getElementById('progressLabel').textContent = `Question ${current + 1} of ${questions.length}`;
+  document.getElementById('progressBar').style.width = `${(current / questions.length) * 100}%`;
+
+  const tag = document.getElementById('funTag');
+  tag.textContent = q.tag;
+  tag.className = 'fun-tag' + (q.tag.includes('Asthma') ? ' asthma' : '');
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span> ${opt}`;
+    btn.onclick = () => selectAnswer(i);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('nextBtn').classList.remove('show');
+}
+
+function selectAnswer(chosen) {
+  const q = questions[current];
+  const options = document.querySelectorAll('.option');
+  options.forEach(o => o.disabled = true);
+
+  const isCorrect = chosen === q.answer;
+  if (isCorrect) score++;
+  userAnswers[current] = { chosen, correct: isCorrect };
+
+  options[chosen].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) options[q.answer].classList.add('reveal-correct');
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  fb.innerHTML = isCorrect
+    ? `<strong>✅ Correct!</strong> ${q.fact}`
+    : `<strong>❌ Not quite!</strong> The answer was <strong>${q.options[q.answer]}</strong>. ${q.fact}`;
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.textContent = current < questions.length - 1 ? 'Next Question →' : 'See My Score 🎉';
+  nextBtn.classList.add('show');
+}
+
+function nextQuestion() {
+  current++;
+  if (current >= questions.length) {
+    showScore();
+  } else {
+    const card = document.getElementById('questionCard');
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = 'fadeUp 0.4s ease both';
+    loadQuestion();
+  }
+}
+
+function showScore() {
+  document.getElementById('questionCard').classList.add('hidden');
+  document.getElementById('progressLabel').style.display = 'none';
+  document.getElementById('progressBar').parentElement.style.display = 'none';
+
+  const pct = (score / questions.length) * 100;
+  const circle = document.getElementById('scoreCircle');
+  circle.style.setProperty('--pct', `${pct}%`);
+
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('scoreDenom').textContent = `out of ${questions.length}`;
+
+  const titles = ["Keep Learning! 💙", "Blue Curious! 💙", "Blue Believer! 💙", "Blue Genius! 🏆"];
+  const msgs = [
+    "Don't worry — now you know more about blue than you did before. That's a win!",
+    "A solid effort! You clearly have some blue knowledge rattling around up there.",
+    "Impressive! You clearly have a keen eye (and brain) for all things blue.",
+    "Outstanding! You are an undisputed Blue Legend. We hope you're wearing a blue shirt right now."
+  ];
+  const tier = score <= 3 ? 0 : score <= 6 ? 1 : score <= 8 ? 2 : 3;
+  document.getElementById('scoreTitle').textContent = titles[tier];
+  document.getElementById('scoreMessage').textContent = msgs[tier];
+
+  const list = document.getElementById('breakdownList');
+  list.innerHTML = '';
+  userAnswers.forEach((ans, i) => {
+    const div = document.createElement('div');
+    div.className = 'breakdown-item';
+    div.innerHTML = `
+      <span class="breakdown-icon">${ans.correct ? '✅' : '❌'}</span>
+      <span class="breakdown-q">${questions[i].text.substring(0, 70)}${questions[i].text.length > 70 ? '…' : ''}</span>
+    `;
+    list.appendChild(div);
+  });
+
+  document.getElementById('scoreScreen').classList.add('show');
+}
+
+function restartQuiz() {
+  current = 0; score = 0; userAnswers = [];
+  document.getElementById('questionCard').classList.remove('hidden');
+  document.getElementById('scoreScreen').classList.remove('show');
+  document.getElementById('progressLabel').style.display = '';
+  document.getElementById('progressBar').parentElement.style.display = '';
+  loadQuestion();
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
