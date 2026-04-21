@@ -383,16 +383,16 @@ const questions = [
     fact: "The Egyptians associated blue with the heavens, water, and divine protection. They even created the world's first synthetic pigment — Egyptian Blue — around 2,200 BC."
   },
   {
-    tag: "💙 Asthma Awareness",
-    text: "The blue reliever inhaler (like Ventolin) is a cornerstone of asthma treatment. How does it work?",
+    tag: "🤯 Weird & Wonderful",
+    text: "Humans couldn't see the colour blue until surprisingly recently — linguistically speaking. Which famous ancient text never once uses the word 'blue'?",
     options: [
-      "It reduces mucus production in the airways",
-      "It relaxes the muscles around the airways to open them up",
-      "It reduces inflammation in the lungs over time",
-      "It increases oxygen levels in the blood directly"
+      "The Bible (Old Testament)",
+      "Homer's The Odyssey",
+      "The Egyptian Book of the Dead",
+      "Sun Tzu's The Art of War"
     ],
     answer: 1,
-    fact: "Blue relievers contain a short-acting beta-agonist (like salbutamol) which relaxes the smooth muscle around airways within minutes, opening them up during an asthma attack. That's why it's called a 'reliever'!"
+    fact: "Homer's Odyssey describes the sea as 'wine-dark' and never mentions blue — because ancient Greek had no word for it! Linguists found that across almost every ancient culture worldwide, blue is the very LAST colour to get its own name. Some researchers believe that without a word for a colour, humans genuinely struggle to distinguish it. When a tribe in Namibia with no word for blue was tested, they couldn't separate blue from green — but could instantly spot subtle shades of green that English speakers couldn't see."
   },
   {
     tag: "🍕 Food & Drink",
@@ -462,7 +462,7 @@ function loadQuestion() {
 
   const tag = document.getElementById('funTag');
   tag.textContent = q.tag;
-  tag.className = 'fun-tag' + (q.tag.includes('Asthma') ? ' asthma' : '');
+  tag.className = 'fun-tag';
 
   const container = document.getElementById('optionsContainer');
   container.innerHTML = '';
